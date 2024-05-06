@@ -65,9 +65,10 @@ ig.ENTITY.Player.inject({
             if (!isSitting) {
                 doSitAction();
                 isSitting = true;
+                /*Old method using player movement, seemed buggy and offsets player every time we set this
                 ig.game.playerEntity.coll.shadow.size = 0;
-                // Old method using player movement, seemed buggy and offsets player every time we set this
-                //ig.game.playerEntity.coll.setSize(0.1, 0.1, 0.1)
+                ig.game.playerEntity.coll.setSize(0.1, 0.1, 0.1)
+                */
                 oldColUpdate = ig.game.playerEntity.coll.update;
                 ig.game.playerEntity.coll.update = function () { };
                 ig.game.playerEntity.coll.vel = {x: 0, y: 0, z: 0};
