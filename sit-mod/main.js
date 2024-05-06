@@ -11,7 +11,6 @@ var oldColUpdate = null; // store old collision update function to restore
 
 var isSitting = false;
 ig.input.bind(219, 'doSitLea');
-
 //ig.game.playerEntity.getAlignedPos()
 //{x: 1007.69, y: 475.54, z: 0}
 ig.ENTITY.Player.inject({
@@ -22,6 +21,42 @@ ig.ENTITY.Player.inject({
                             ig.game.playerEntity.getAlignedPos()
             
             {x: 867.89, y: 659.28, z: 0}*/
+            /*
+            let pos = ig.game.playerEntity.getAlignedPos()
+                pos.x -= 8
+                pos.y -= 8
+                ig.game.playerEntity.setPos(pos.x, pos.y, pos.z)
+                stays the same
+                */
+
+            if (ig.input.state('left')) {
+                console.log("left")
+                // get pos and minus 1 from x
+                let pos = ig.game.playerEntity.getAlignedPos()
+                pos.x -= 9; // move x axis
+                pos.y -= 8; // keeps y axis the same
+                ig.game.playerEntity.setPos(pos.x, pos.y, pos.z)
+            } else if (ig.input.state('right')) {
+                console.log("right")
+                // get pos and add 1 to x
+                let pos = ig.game.playerEntity.getAlignedPos()
+                pos.x -= 7; // move x axis
+                pos.y -= 8; // keeps y axis the same
+                ig.game.playerEntity.setPos(pos.x, pos.y, pos.z)
+            } else if (ig.input.state('up')) {
+                console.log("up")
+                let pos = ig.game.playerEntity.getAlignedPos()
+                pos.x -= 8
+                pos.y -= 9
+                ig.game.playerEntity.setPos(pos.x, pos.y, pos.z)
+            } else if (ig.input.state('down')) {
+                console.log("down")
+                let pos = ig.game.playerEntity.getAlignedPos()
+                pos.x -= 8
+                pos.y -= 7
+                ig.game.playerEntity.setPos(pos.x, pos.y, pos.z)
+            }
+
         }
 
         if (ig.input.pressed('doSitLea')) {
@@ -70,22 +105,23 @@ ig.ENTITY.Player.inject({
                     immediately: false
                 }).start(cc.ig.playerInstance())
                 isSitting = true;
-                ig.game.playerEntity.coll.shadow.size = 0
+                ig.game.playerEntity.coll.shadow.size = 0;
                 // Old method using player movement, seemed buggy and offsets player every time we set this
                 //ig.game.playerEntity.coll.setSize(0.1, 0.1, 0.1)
                 oldColUpdate = ig.game.playerEntity.coll.update;
-                ig.game.playerEntity.coll.update = function () { }
-                ig.game.playerEntity.coll.vel = {x: 0, y: 0, z: 0}
+                ig.game.playerEntity.coll.update = function () { };
+                ig.game.playerEntity.coll.vel = {x: 0, y: 0, z: 0};
+                // Set by game forcefully in coll update
+                ig.game.playerEntity.coll.ignoreCollision = true;
+                ig.game.playerEntity.coll.zGravityFactor = 0;
 
             } else {
                 ig.game.playerEntity.cancelAction()
                 isSitting = false;
                 //ig.game.playerEntity.coll.setSize(16, 16, 24)
                 ig.game.playerEntity.coll.update = oldColUpdate;
-
+                ig.game.playerEntity.coll.zGravityFactor = 1;
             }
-
-
         }
 
         return this.parent(...args);

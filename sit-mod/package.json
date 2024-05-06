@@ -1,8 +1,8 @@
 {
   "name": "cc-sit-anywhere",
   "version": "0.1.0",
-  "ccmodHumanName": "CrossCode Dungeon Assist/Skip",
-  "description": "CrossCode mod to sit anywhere. Use ] to sit.",
+  "ccmodHumanName": "Lea Sit Anywhere Mod (USE BACKSLASH)",
+  "description": "CrossCode mod to sit anywhere. Use Backslash(\\) to sit. Use left or right bracket ([ or ]) to change the sitting head facing direction. Collision is disabled while sitting to allow sitting on top of objects.",
   "homepage": "https://github.com/gen3vra/cc-sit-mod",
   "main": "main.js",
   "module": "true"
