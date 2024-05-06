@@ -1,52 +1,48 @@
-// DEBUG STUFF
-var debugMode = true;
 var oldColUpdate = null;
-
 var isSitting = false;
 var lastPressedAdjustedHeadKeyCache = null;
-ig.input.bind(220, 'doSitLea');
-ig.input.bind(219, 'doSitLeaLeft');
-ig.input.bind(221, 'doSitLeaRight');
+var sitMoveSpeed = 1;
+var sitMoveMult = 1;
+if (versions.hasOwnProperty('input-api')) {
+    ig.lang.labels.sc.gui.options.controls.keys.sitanywhere = 'Sit Down';
+    ig.lang.labels.sc.gui.options.controls.keys.sitanywhereL = 'Turn Head Left';
+    ig.lang.labels.sc.gui.options.controls.keys.sitanywhereR = 'Turn Head Right';
+    ig.lang.labels.sc.gui.options.headers.sitanywhere = 'sit anywhere';
+    ig.lang.labels.sc.gui.options.headers.sitanywhereL = 'sit left';
+    ig.lang.labels.sc.gui.options.headers.sitanywhereR = 'sit right';
+
+} else {
+    ig.input.bind(220, 'sitanywhere');
+    ig.input.bind(219, 'sitanywhereL');
+    ig.input.bind(221, 'sitanywhereR');
+}
 ig.ENTITY.Player.inject({
     update(...args) {
         if (isSitting) {
-            /*
+            // adjusted pos is off by 8,8
             let pos = ig.game.playerEntity.getAlignedPos()
-                pos.x -= 8
-                pos.y -= 8
-                ig.game.playerEntity.setPos(pos.x, pos.y, pos.z)
-                stays the same
-                */
+            pos.x -= 8
+            pos.y -= 8
+
+            if (ig.input.state('quick'))
+                sitMoveMult = 0.2;
+            else
+                sitMoveMult = 1;
+
+            sitMoveSpeed = 1 * sitMoveMult;
 
             if (ig.input.state('left')) {
-                console.log("left")
-                // get pos and minus 1 from x
-                let pos = ig.game.playerEntity.getAlignedPos()
-                pos.x -= 9; // move x axis
-                pos.y -= 8; // keeps y axis the same
-                ig.game.playerEntity.setPos(pos.x, pos.y, pos.z)
+                pos.x -= sitMoveSpeed;
             } else if (ig.input.state('right')) {
-                console.log("right")
-                // get pos and add 1 to x
-                let pos = ig.game.playerEntity.getAlignedPos()
-                pos.x -= 7; // move x axis
-                pos.y -= 8; // keeps y axis the same
-                ig.game.playerEntity.setPos(pos.x, pos.y, pos.z)
+                pos.x += sitMoveSpeed;
             } else if (ig.input.state('up')) {
-                console.log("up")
-                let pos = ig.game.playerEntity.getAlignedPos()
-                pos.x -= 8
-                pos.y -= 9
-                ig.game.playerEntity.setPos(pos.x, pos.y, pos.z)
+                pos.y -= sitMoveSpeed;
             } else if (ig.input.state('down')) {
-                console.log("down")
-                let pos = ig.game.playerEntity.getAlignedPos()
-                pos.x -= 8
-                pos.y -= 7
-                ig.game.playerEntity.setPos(pos.x, pos.y, pos.z)
+                pos.y += sitMoveSpeed;
             }
+            ig.game.playerEntity.setPos(pos.x, pos.y, pos.z)
 
-            if (ig.input.pressed('doSitLeaLeft')) {
+            if (ig.input.pressed('sitanywhereL')) {
                 if (lastPressedAdjustedHeadKeyCache === "sitFaceDownLeft") {
                     doSitAction("sit");
                     lastPressedAdjustedHeadKeyCache = "sit";
@@ -54,7 +50,7 @@ ig.ENTITY.Player.inject({
                     doSitAction("sitFaceDownLeft");
                     lastPressedAdjustedHeadKeyCache = "sitFaceDownLeft";
                 }
-            } else if (ig.input.pressed('doSitLeaRight')) {
+            } else if (ig.input.pressed('sitanywhereR')) {
                 if (lastPressedAdjustedHeadKeyCache === "sitFaceUpRight") {
                     doSitAction("sit");
                     lastPressedAdjustedHeadKeyCache = "sit";
@@ -65,8 +61,7 @@ ig.ENTITY.Player.inject({
             }
         }
 
-        if (ig.input.pressed('doSitLea')) {
-
+        if (ig.input.pressed('sitanywhere')) {
             if (!isSitting) {
                 doSitAction();
                 isSitting = true;
@@ -106,12 +101,10 @@ function doSitAction(sitDir = "sit") {
                     //name: "sitFaceDownLeft"
                     name: sitDir
                     /*
-name: "sit" < Sitting pose
-/*name: "sitFaceDownLeft" < Face left while sitting
-name: "sitFaceUpRight" < Face right while sitting
-I have no idea why the names are like this, the other poses don't work?
-*/
-
+                    "sit" |
+                    "sitFaceDownLeft" <
+                    "sitFaceUpRight" >
+                    */
                 }
             },
             {
@@ -144,4 +137,3 @@ I have no idea why the names are like this, the other poses don't work?
         immediately: false
     }).start(cc.ig.playerInstance())
 }
-
