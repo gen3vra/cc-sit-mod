@@ -1,8 +1,8 @@
 {
   "name": "cc-sit-anywhere",
-  "version": "0.1.0",
-  "ccmodHumanName": "Lea Sit Anywhere Mod (USE BACKSLASH)",
-  "description": "CrossCode mod to sit anywhere. Use Backslash(\\) to sit. Use left or right bracket ([ or ]) to change the sitting head facing direction. Collision is disabled while sitting to allow sitting on top of objects.",
+  "version": "0.2.0",
+  "ccmodHumanName": "Sit Anywhere Mod",
+  "description": "CrossCode mod to sit anywhere. Use Backslash(\\) to sit. Hold to sit on the ground. Use left or right bracket ([ or ]) to change the sitting head facing direction. Collision is disabled while sitting to allow sitting on top of objects.",
   "homepage": "https://github.com/gen3vra/cc-sit-mod",
   "main": "main.js",
   "prestart": "prestart.js",

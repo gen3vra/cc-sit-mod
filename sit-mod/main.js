@@ -3,6 +3,8 @@ var isSitting = false;
 var lastPressedAdjustedHeadKeyCache = null;
 var sitMoveSpeed = 1;
 var sitMoveMult = 1;
+var sitOnGroundTimer = 0;
+var sitState = -1;
 if (versions.hasOwnProperty('input-api')) {
     ig.lang.labels.sc.gui.options.controls.keys.sitanywhere = 'Sit Down';
     ig.lang.labels.sc.gui.options.controls.keys.sitanywhereL = 'Turn Head Left';
@@ -44,25 +46,43 @@ ig.ENTITY.Player.inject({
 
             if (ig.input.pressed('sitanywhereL')) {
                 if (lastPressedAdjustedHeadKeyCache === "sitFaceDownLeft") {
-                    doSitAction("sit");
+                    doSitAction("sit" + (sitState === 0 ? "" : "Ground"));
                     lastPressedAdjustedHeadKeyCache = "sit";
                 } else {
-                    doSitAction("sitFaceDownLeft");
+                    if (sitState === 0)
+                        doSitAction("sitFaceDownLeft");
+                    else
+                        doSitAction("sitGroundFaceDownLeft");
                     lastPressedAdjustedHeadKeyCache = "sitFaceDownLeft";
+
                 }
             } else if (ig.input.pressed('sitanywhereR')) {
                 if (lastPressedAdjustedHeadKeyCache === "sitFaceUpRight") {
-                    doSitAction("sit");
+                    doSitAction("sit" + (sitState === 0 ? "" : "Ground"));
                     lastPressedAdjustedHeadKeyCache = "sit";
                 } else {
-                    doSitAction("sitFaceUpRight");
+                    if (sitState === 0)
+                        doSitAction("sitFaceUpRight");
+                    else
+                        doSitAction("sitGroundFaceUpRight");
                     lastPressedAdjustedHeadKeyCache = "sitFaceUpRight";
+                }
+            }
+
+
+            if (ig.input.state('sitanywhere')) {
+                console.log("teste");
+                sitOnGroundTimer += ig.system.tick;
+                if (sitOnGroundTimer > 0.35) {
+                    doSitAction("sitGround");
+                    sitState = 1;
                 }
             }
         }
 
         if (ig.input.pressed('sitanywhere')) {
             if (!isSitting) {
+                sitState = 0;
                 doSitAction();
                 isSitting = true;
                 /*Old method using player movement, seemed buggy and offsets player every time we set this
@@ -82,6 +102,8 @@ ig.ENTITY.Player.inject({
                 //ig.game.playerEntity.coll.setSize(16, 16, 24)
                 ig.game.playerEntity.coll.update = oldColUpdate;
                 ig.game.playerEntity.coll.zGravityFactor = 1;
+                sitOnGroundTimer = 0;
+                sitState = -1;
             }
         }
 
