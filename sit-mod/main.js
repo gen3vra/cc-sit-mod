@@ -5,6 +5,7 @@ var sitMoveSpeed = 1;
 var sitMoveMult = 1;
 var sitOnGroundTimer = 0;
 var sitState = -1;
+
 if (versions.hasOwnProperty('input-api')) {
     ig.lang.labels.sc.gui.options.controls.keys.sitanywhere = 'Sit Down';
     ig.lang.labels.sc.gui.options.controls.keys.sitanywhereL = 'Turn Head Left';
@@ -18,6 +19,7 @@ if (versions.hasOwnProperty('input-api')) {
     ig.input.bind(219, 'sitanywhereL');
     ig.input.bind(221, 'sitanywhereR');
 }
+
 ig.ENTITY.Player.inject({
     update(...args) {
         if (isSitting) {
@@ -32,6 +34,13 @@ ig.ENTITY.Player.inject({
                 sitMoveMult = 1;
 
             sitMoveSpeed = 1 * sitMoveMult;
+
+
+            if (ig.input.state('dash2')) {
+                pos.z += sitMoveSpeed;
+            } else if (ig.input.state('guard')) {
+                pos.z -= sitMoveSpeed;
+            }
 
             if (ig.input.state('left')) {
                 pos.x -= sitMoveSpeed;
@@ -71,9 +80,8 @@ ig.ENTITY.Player.inject({
 
 
             if (ig.input.state('sitanywhere')) {
-                console.log("teste");
                 sitOnGroundTimer += ig.system.tick;
-                if (sitOnGroundTimer > 0.35) {
+                if (sitOnGroundTimer > 0.3) {
                     doSitAction("sitGround");
                     sitState = 1;
                 }
@@ -85,10 +93,6 @@ ig.ENTITY.Player.inject({
                 sitState = 0;
                 doSitAction();
                 isSitting = true;
-                /*Old method using player movement, seemed buggy and offsets player every time we set this
-                ig.game.playerEntity.coll.shadow.size = 0;
-                ig.game.playerEntity.coll.setSize(0.1, 0.1, 0.1)
-                */
                 oldColUpdate = ig.game.playerEntity.coll.update;
                 ig.game.playerEntity.coll.update = function () { };
                 ig.game.playerEntity.coll.vel = {x: 0, y: 0, z: 0};
@@ -99,7 +103,6 @@ ig.ENTITY.Player.inject({
             } else {
                 ig.game.playerEntity.cancelAction()
                 isSitting = false;
-                //ig.game.playerEntity.coll.setSize(16, 16, 24)
                 ig.game.playerEntity.coll.update = oldColUpdate;
                 ig.game.playerEntity.coll.zGravityFactor = 1;
                 sitOnGroundTimer = 0;
@@ -121,13 +124,7 @@ function doSitAction(sitDir = "sit") {
                 type: "SHOW_EXTERN_ANIM",
                 anim: {
                     sheet: "player-poses",
-                    //name: "sitFaceDownLeft"
                     name: sitDir
-                    /*
-                    "sit" |
-                    "sitFaceDownLeft" <
-                    "sitFaceUpRight" >
-                    */
                 }
             },
             {
